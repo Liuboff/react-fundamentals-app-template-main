@@ -36,16 +36,17 @@
 //   ** CourseCard should display created date in the correct format.
 
 import React from "react";
+import { Link } from "react-router-dom";
+
+import { Button } from "../../../../common";
 
 import { getCourseDuration, formatCreationDate } from "../../../../helpers";
-
 import deleteIcon from "../../../../assets/deleteButtonIcon.svg";
 import editIcon from "../../../../assets/editButtonIcon.svg";
 
 import styles from "./styles.module.css";
-import { Button } from "../../../../common";
 
-export const CourseCard = ({ course, handleShowCourse, authorsList }) => {
+export const CourseCard = ({ course, authorsList }) => {
   // write your code here
 
   return (
@@ -81,21 +82,31 @@ export const CourseCard = ({ course, handleShowCourse, authorsList }) => {
             reuse Button component wrapped with Link from react-router with editButtonIcon from 'src/assets' for 'Update' button with
               data-testid="updateCourse" 
 			    */}
-          <Button
-            buttonText="Show course"
-            handleClick={() => handleShowCourse(course.id)}
-            data-testid="coursecard.showCourse.button"
-          />
+
+          <Link
+            to={`/courses/${course.id}`}
+            data-testid="coursecard.showCourse.link"
+          >
+            <Button
+              buttonText="Show course"
+              data-testid="coursecard.showCourse.button"
+            />
+          </Link>
           <Button
             buttonText={<img src={deleteIcon} alt="Delete" />}
             handleClick={() => {}}
             data-testid="coursecard.deleteCourse.button"
           />
-          <Button
-            buttonText={<img src={editIcon} alt="Update" />}
-            handleClick={() => {}}
-            data-testid="coursecard.updateCourse.button"
-          />
+          <Link
+            to={`/courses/${course.id}/edit`}
+            data-testid="coursecard.showCourse.link"
+          >
+            <Button
+              buttonText={<img src={editIcon} alt="Update" />}
+              handleClick={() => {}}
+              data-testid="coursecard.updateCourse.button"
+            />
+          </Link>
         </div>
       </div>
     </div>

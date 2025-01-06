@@ -1,60 +1,127 @@
-// export const createUser = async (data) => {
-//   const response = await fetch("change with your url", {
-//     method: "POST",
-//     body: JSON.stringify(data),
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//   });
+const url = "http://localhost:4000/";
 
-//   if (!response.ok) {
-//     throw new Error("Network Error");
-//   }
+export const createUser = async (data) => {
+  const registerUrl = `${url}register`;
+  const response = await fetch(registerUrl, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-//   return await response.json();
-// };
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Server error: ", errorData);
+    throw new Error(errorData.message || "Network Error");
+  }
 
-// export const login = async (data) => {
-//   // write your code here
-//   return await response.json();
-// };
+  return await response.json();
+};
 
-// export const getCourses = async () => {
-//   // write your code here
-//   return await response.json();
-// };
+export const login = async (data) => {
+  // write your code here
+  const loginUrl = `${url}login`;
+  const response = await fetch(loginUrl, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return await response.json();
+};
 
-// export const getAuthors = async () => {
-//   // write your code here
-//   return await response.json();
-// };
+export const getCourses = async () => {
+  const coursesUrl = `${url}courses/all`;
+  const response = await fetch(coursesUrl);
+  return await response.json();
+};
 
-// export const getCurrentUser = async () => {
-//   // write your code here
-//   return await response.json();
-// };
+export const getAuthors = async () => {
+  const authorsUrl = `${url}authors/all`;
+  const response = await fetch(authorsUrl);
+  return await response.json();
+};
+
+export const getCurrentUser = async () => {
+  // write your code here
+  const myUrl = `${url}users/me`;
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("Token is not available in localStorage");
+  }
+
+  try {
+    const response = await fetch(myUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    throw error;
+  }
+};
 
 // export const updateCourseService = async () => {
 //   // write your code here
 //   return await response.json();
 // };
 
-// export const logout = async () => {
-//   // write your code here
-//   return await response.json();
-// };
+export const logout = async () => {
+  // write your code here
+  const logoutUrl = `${url}/logout`;
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(logoutUrl, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return await response.json();
+};
 
 // export const deleteCourseService = async () => {
 //   // write your code here
 //   return await response.json();
 // };
 
-// export const createCourse = async () => {
-//   // write your code here
-//   return await response.json();
-// };
+export const createCourse = async (course) => {
+  const createCourseUrl = `${url}courses/add`;
+  const response = await fetch(createCourseUrl, {
+    method: "POST",
+    body: JSON.stringify(course),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  // write your code here
+  return await response.json();
+};
 
-// export const createAuthor = async () => {
-//   // write your code here
-//   return await response.json();
-// };
+export const createAuthor = async (name) => {
+  // write your code here
+  const createAuthorUrl = `${url}authors/add`;
+  const response = await fetch(createAuthorUrl, {
+    method: "POST",
+    body: JSON.stringify({ name }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Network Error");
+  }
+  return await response.json();
+};

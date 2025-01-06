@@ -15,7 +15,7 @@ export function SearchBar({ handleSearch }) {
         onChange={(e) => {
           setSearchTerm(e.target.value);
           if (!e.target.value) {
-            handleSearch(searchTerm);
+            handleSearch(e.target.value);
           }
         }}
         onKeyDown={(e) => {

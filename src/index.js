@@ -1,5 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+
 import App from "./App";
 import "./index.css";
 
@@ -12,4 +14,8 @@ import "./index.css";
 // * wrap your App + Browser with Redux Provider in src/index.js
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);
+root.render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);

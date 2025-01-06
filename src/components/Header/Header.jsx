@@ -1,9 +1,3 @@
-import React from "react";
-
-import styles from "./styles.module.css";
-import { Logo } from "./components";
-import { Button } from "../../common";
-
 // Module 1:
 // * add Logo and Button components
 // * add Header component to the App component
@@ -33,22 +27,50 @@ import { Button } from "../../common";
 // *proposed cases for unit tests:
 //   ** Header should have logo and user's name.
 
-export const Header = () => {
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+
+import { Logo } from "./components";
+import { Button } from "../../common";
+import { logout } from "../../services";
+
+import styles from "./styles.module.css";
+
+export const Header = ({ currentUser }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const handleLoginLogout = () => {
-    console.log("clicked from header (login/logout)");
+    if (currentUser) {
+      try {
+        logout();
+        localStorage.removeItem("token");
+        navigate("/login");
+      } catch (error) {
+        console.error("Error logout current user:", error);
+        throw error;
+      }
+    } else {
+      navigate("/login");
+    }
   };
+
+  const isAuthPage =
+    location.pathname === "/login" || location.pathname === "/registration";
 
   return (
     <div className={styles.headerContainer}>
       <Logo />
-      <div className={styles.userContainer}>
-        <p className={styles.userName}>Harry Potter</p>
-        <Button
-          buttonText={true ? "Logout" : "Login"}
-          handleClick={handleLoginLogout}
-          data-testid="header.login-logout.button"
-        />
-      </div>
+      {!isAuthPage && (
+        <div className={styles.userContainer}>
+          <p className={styles.userName}>{currentUser?.name || "Stranger"}</p>
+          <Button
+            buttonText={currentUser?.name ? "Logout" : "Login"}
+            handleClick={handleLoginLogout}
+            data-testid="header.login-logout.button"
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -1,11 +1,3 @@
-import React from "react";
-
-import styles from "./styles.module.css";
-import { Button } from "../../common";
-import { CourseCard } from "./components";
-import { SearchBar } from "./components/SearchBar/SearchBar";
-import { EmptyCourseList } from "./components/EmptyCourseList/EmptyCourseList";
-
 // Module 1:
 // * render list of components using 'CourseCard' component for each course
 // * render 'ADD NEW COURSE' button (reuse Button component)
@@ -36,9 +28,29 @@ import { EmptyCourseList } from "./components/EmptyCourseList/EmptyCourseList";
 //   ** Courses should display amount of CourseCard equal length of courses array.
 //   ** CourseForm should be shown after a click on the "Add new course" button.
 
-export const Courses = ({ coursesList, authorsList, handleShowCourse }) => {
+import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
+
+import { Button } from "../../common";
+import { CourseCard } from "./components";
+import { SearchBar } from "./components/SearchBar/SearchBar";
+import { EmptyCourseList } from "./components/EmptyCourseList/EmptyCourseList";
+
+import styles from "./styles.module.css";
+
+export const Courses = ({ coursesList, authorsList, onRefreshCourses }) => {
   // write your code here
+
+  useEffect(() => {
+    onRefreshCourses();
+  }, [onRefreshCourses]);
+
   const [showedCourses, setShowedCourses] = React.useState(coursesList);
+
+  React.useEffect(() => {
+    setShowedCourses(coursesList);
+  }, [coursesList]);
+
   const handleSearchCourses = (searchText) => {
     if (searchText) {
       const filteredCourses = coursesList.filter(
@@ -61,11 +73,12 @@ export const Courses = ({ coursesList, authorsList, handleShowCourse }) => {
         <>
           <div className={styles.panel}>
             <SearchBar handleSearch={handleSearchCourses} />
-            <Button
-              buttonText="ADD NEW COURSE"
-              handleClick={() => console.log("Add course clicked")}
-              data-testid="courses.addCourse.button"
-            />
+            <Link to="/courses/add">
+              <Button
+                buttonText="ADD NEW COURSE"
+                data-testid="courses.addCourse.button"
+              />
+            </Link>
           </div>
           {showedCourses.length > 0 ? (
             showedCourses.map((course) => (
@@ -73,7 +86,6 @@ export const Courses = ({ coursesList, authorsList, handleShowCourse }) => {
                 key={course.id}
                 course={course}
                 authorsList={authorsList}
-                handleShowCourse={handleShowCourse}
               />
             ))
           ) : (
