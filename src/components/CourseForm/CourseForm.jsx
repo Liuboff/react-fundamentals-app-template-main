@@ -46,7 +46,7 @@
 //   **  CourseForm 'Add author' button click should add an author to the course authors list.
 //   **  CourseForm 'Delete author' button click should delete an author from the course list.
 
-import React from "react";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router";
 
 import { Button, Input } from "../../common";
@@ -66,6 +66,9 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
   const [formErrors, setFormErrors] = React.useState({});
 
   const navigate = useNavigate();
+  const titleRef = useRef(null);
+  const descriptionRef = useRef(null);
+  const durationRef = useRef(null);
 
   React.useEffect(() => {
     setAvailableAuthors(authorsList);
@@ -74,13 +77,13 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
   const courseData = { title, description, duration, authors };
 
   const handleCreateAuthor = async (authorName) => {
-    console.log("Attempting to create author:", authorName); // Логування спроби створення автора
+    console.log("Attempting to create author:", authorName);
     try {
       const newAuthor = await createAuthor(authorName);
-      console.log("New Author Created:", newAuthor); // Логування успішного створення автора
+      console.log("New Author Created:", newAuthor);
 
       setAvailableAuthors((authorsList) => [...authorsList, newAuthor]);
-      console.log("Updated available authors:", availableAuthors); // Логування оновлених авторів
+      console.log("Updated available authors:", availableAuthors);
 
       console.log("Author created:", newAuthor);
     } catch (error) {
@@ -118,6 +121,25 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
     }
   };
 
+  const handleCancel = (event) => {
+    event.preventDefault();
+
+    setAvailableAuthors((prevAvailableAuthors) => [
+      ...prevAvailableAuthors,
+      ...authorsList.filter((author) => authors.includes(author.id)),
+    ]);
+
+    setTitle("");
+    setDescription("");
+    setDuration("");
+    setAuthors([]);
+    setFormErrors({});
+
+    if (titleRef.current) titleRef.current.value = "";
+    if (descriptionRef.current) descriptionRef.current.value = "";
+    if (durationRef.current) durationRef.current.value = "";
+  };
+
   return (
     <div className={styles.container}>
       <h2>Course edit or Create page</h2>
@@ -129,6 +151,7 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
           <Input
             type="text"
             placeholder="Enter a course title"
+            ref={titleRef}
             onChange={(e) => {
               setTitle(e.target.value);
             }}
@@ -142,6 +165,7 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
           Description
           <textarea
             className={styles.description}
+            ref={descriptionRef}
             data-testid="descriptionTextArea"
             onChange={(e) => {
               setDescription(e.target.value);
@@ -161,6 +185,7 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
                 <Input
                   type="text"
                   placeholder="Enter a course duration"
+                  ref={durationRef}
                   onChange={(e) => {
                     setDuration(e.target.value);
                   }}
@@ -246,14 +271,7 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
           />
           {/* // reuse Button component for 'CANCEL' button with */}
           <Button
-            handleClick={(event) => {
-              event.preventDefault();
-              setTitle("");
-              setDescription("");
-              setDuration("");
-              setAuthors([]);
-              setFormErrors({});
-            }}
+            handleClick={(event) => handleCancel(event)}
             buttonText="CANCEL"
             data-testid="courseForm.cancelButton"
           />
