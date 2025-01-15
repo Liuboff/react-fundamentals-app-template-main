@@ -29,25 +29,26 @@
 //   ** CourseForm should be shown after a click on the "Add new course" button.
 
 import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import { Button } from "../../common";
 import { CourseCard } from "./components";
 import { SearchBar } from "./components/SearchBar/SearchBar";
 import { EmptyCourseList } from "./components/EmptyCourseList/EmptyCourseList";
+import { getCoursesSelector } from "../../store/selectors";
 
 import styles from "./styles.module.css";
 
-export const Courses = ({ coursesList, authorsList, onRefreshCourses }) => {
+export const Courses = () => {
   // write your code here
 
-  useEffect(() => {
-    onRefreshCourses();
-  }, [onRefreshCourses]);
+  const coursesList = useSelector(getCoursesSelector);
+  // const authorsList = useSelector(getAuthorsSelector);
 
   const [showedCourses, setShowedCourses] = React.useState(coursesList);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setShowedCourses(coursesList);
   }, [coursesList]);
 
@@ -82,11 +83,7 @@ export const Courses = ({ coursesList, authorsList, onRefreshCourses }) => {
           </div>
           {showedCourses.length > 0 ? (
             showedCourses.map((course) => (
-              <CourseCard
-                key={course.id}
-                course={course}
-                authorsList={authorsList}
-              />
+              <CourseCard key={course.id} course={course} />
             ))
           ) : (
             <p className={styles.noresult}>

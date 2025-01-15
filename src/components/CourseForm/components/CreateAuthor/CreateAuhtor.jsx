@@ -9,15 +9,23 @@
 // // Module 3.
 // // Remove 'onCreateAuthor' from props => use 'dispatch' and 'saveAuthor' from 'authorsSlice.js' to save new author to the store
 
-import React from "react";
+import React, { useRef } from "react";
+import { useDispatch } from "react-redux";
+
 import { Button, Input } from "../../../../common";
 
 import styles from "./styles.module.css";
+import { saveAuthor } from "../../../../store/slices/authorsSlice";
+import { createAuthor } from "../../../../services";
 
-export const CreateAuthor = ({ onCreateAuthor }) => {
+export const CreateAuthor = () => {
   // write your code here
   const [authorName, setAuthorName] = React.useState("");
   const [formError, setFormError] = React.useState({});
+
+  const nameRef = useRef("");
+
+  const dispatch = useDispatch();
 
   const validateForm = () => {
     const errors = {};
@@ -26,13 +34,20 @@ export const CreateAuthor = ({ onCreateAuthor }) => {
     return errors;
   };
 
-  const handleCreateAuthor = (event) => {
+  const handleCreateAuthor = async (event) => {
     event.preventDefault();
     const errors = validateForm();
     setFormError(errors);
     if (Object.keys(errors).length === 0 && authorName.trim()) {
-      onCreateAuthor(authorName);
+      try {
+        // const newAuthor = await createAuthor(authorName);
+        // dispatch(saveAuthor(newAuthor));
+        dispatch(saveAuthor({ name: authorName, id: `${Date.now()}` }));
+      } catch (error) {
+        console.error("Error creating author:", error);
+      }
       setAuthorName("");
+      nameRef.current.value = "";
       setFormError({});
     } else {
       console.log("Form contains errors:", errors);
@@ -47,6 +62,7 @@ export const CreateAuthor = ({ onCreateAuthor }) => {
         type="text"
         placeholder="Enter an author name"
         value={authorName}
+        ref={nameRef}
         onChange={(e) => {
           setAuthorName(e.target.value);
           setFormError({});

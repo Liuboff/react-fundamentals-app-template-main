@@ -36,9 +36,12 @@
 //   ** CourseCard should display created date in the correct format.
 
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import { Button } from "../../../../common";
+import { getAuthorsSelector } from "../../../../store/selectors";
+import { deleteCourse } from "../../../../store/slices/coursesSlice";
 
 import { getCourseDuration, formatCreationDate } from "../../../../helpers";
 import deleteIcon from "../../../../assets/deleteButtonIcon.svg";
@@ -46,8 +49,14 @@ import editIcon from "../../../../assets/editButtonIcon.svg";
 
 import styles from "./styles.module.css";
 
-export const CourseCard = ({ course, authorsList }) => {
+export const CourseCard = ({ course }) => {
   // write your code here
+  const authorsList = useSelector(getAuthorsSelector);
+  const dispatch = useDispatch();
+
+  const handleCourseDelete = (courseId) => {
+    dispatch(deleteCourse(courseId));
+  };
 
   return (
     <div className={styles.cardContainer} data-testid="courseCard">
@@ -94,7 +103,7 @@ export const CourseCard = ({ course, authorsList }) => {
           </Link>
           <Button
             buttonText={<img src={deleteIcon} alt="Delete" />}
-            handleClick={() => {}}
+            handleClick={() => handleCourseDelete(course.id)}
             data-testid="coursecard.deleteCourse.button"
           />
           <Link

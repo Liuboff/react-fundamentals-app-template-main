@@ -48,16 +48,23 @@
 
 import React, { useRef } from "react";
 import { useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Button, Input } from "../../common";
 import { AuthorItem, CreateAuthor } from "./components";
+import { getAuthorsSelector } from "../../store/selectors";
+import { createCourse } from "../../services";
+import { saveCourse } from "../../store/slices/coursesSlice";
 
 import { getCourseDuration } from "../../helpers";
 
 import styles from "./styles.module.css";
 
-export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
+export const CourseForm = () => {
   //write your code here
+
+  const authorsList = useSelector(getAuthorsSelector);
+
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [duration, setDuration] = React.useState("");
@@ -66,30 +73,17 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
   const [formErrors, setFormErrors] = React.useState({});
 
   const navigate = useNavigate();
-  const titleRef = useRef(null);
-  const descriptionRef = useRef(null);
-  const durationRef = useRef(null);
+  const titleRef = useRef("");
+  const descriptionRef = useRef("");
+  const durationRef = useRef("");
+
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     setAvailableAuthors(authorsList);
   }, [authorsList]);
 
   const courseData = { title, description, duration, authors };
-
-  const handleCreateAuthor = async (authorName) => {
-    console.log("Attempting to create author:", authorName);
-    try {
-      const newAuthor = await createAuthor(authorName);
-      console.log("New Author Created:", newAuthor);
-
-      setAvailableAuthors((authorsList) => [...authorsList, newAuthor]);
-      console.log("Updated available authors:", availableAuthors);
-
-      console.log("Author created:", newAuthor);
-    } catch (error) {
-      console.error("Error creating author:", error);
-    }
-  };
 
   const validateForm = () => {
     const errors = {};
@@ -111,7 +105,15 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
 
     if (Object.keys(errors).length === 0) {
       try {
-        await createCourse(courseData);
+        // const newCourse = await createCourse(courseData);
+        // dispatch(saveCourse(newCourse));
+
+        const courseDTO = {
+          id: `${Date.now()}`,
+          creationDate: new Date(Date.now()).toLocaleDateString("en-GB"),
+          ...courseData,
+        };
+        dispatch(saveCourse(courseDTO));
         navigate("/courses");
       } catch (error) {
         console.error("Error creating course:", error);
@@ -187,7 +189,7 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
                   placeholder="Enter a course duration"
                   ref={durationRef}
                   onChange={(e) => {
-                    setDuration(e.target.value);
+                    setDuration(+e.target.value);
                   }}
                   data-testid="durationInput"
                 />
@@ -201,10 +203,10 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
 
             <h2>Authors</h2>
             {/* // use CreateAuthor component */}
-            <CreateAuthor onCreateAuthor={handleCreateAuthor} />
+            <CreateAuthor />
+
             <div className={styles.authorsContainer}>
               <h3>Authors List</h3>
-
               {/* // use 'map' to display all available autors. Reuse 'AuthorItem' component for each author */}
               {availableAuthors.length > 0 ? (
                 availableAuthors.map((author) => (
@@ -267,13 +269,13 @@ export const CourseForm = ({ authorsList, createCourse, createAuthor }) => {
           <Button
             handleClick={(event) => handleSubmit(event)}
             buttonText="CREATE/UPDATE COURSE"
-            data-testid="courseForm.createCourseButton"
+            data-testid="createCourseButton"
           />
           {/* // reuse Button component for 'CANCEL' button with */}
           <Button
             handleClick={(event) => handleCancel(event)}
             buttonText="CANCEL"
-            data-testid="courseForm.cancelButton"
+            data-testid="cancelButton"
           />
         </div>
       </form>

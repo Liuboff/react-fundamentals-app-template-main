@@ -26,8 +26,9 @@
 // * wrap 'CourseForm' in the 'PrivateRoute' component
 // * get authorized user info by 'user/me' GET request if 'localStorage' contains token
 
-import React, { useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router";
+// import { useDispatch } from "react-redux";
 
 import {
   CourseForm,
@@ -37,75 +38,64 @@ import {
   Login,
   Registration,
 } from "./components";
-import {
-  getCourses,
-  getAuthors,
-  createAuthor,
-  createCourse,
-  getCurrentUser,
-} from "./services";
+import { getAuthors, getCourses, getCurrentUser } from "./services";
 
 import styles from "./App.module.css";
+import { setCourses } from "./store/slices/coursesSlice";
+import { setAuthors } from "./store/slices/authorsSlice";
+import { useDispatch } from "react-redux";
 
 function App() {
   // write your code here
-  const [courses, setCourses] = useState([]);
-  const [authors, setAuthors] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
 
-  const fetchData = async () => {
-    try {
-      let coursesList = await getCourses();
-      let authorsList = await getAuthors();
-      setCourses(coursesList.result);
-      setAuthors(authorsList.result);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  const dispatch = useDispatch();
+
+  const fetchData = useCallback(async () => {
+    const coursesList = await getCourses();
+    const authorsList = await getAuthors();
+
+    dispatch(setCourses(coursesList.result));
+    dispatch(setAuthors(authorsList.result));
+  }, [dispatch]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   return (
     <div className={styles.wrapper}>
-      <Header currentUser={currentUser} />
+      <Header />
       <div className={styles.container}>
         {/* place other components */}
         <Routes>
           <Route path="/registration" element={<Registration />} />
           <Route
             path="/login"
-            element={
-              <Login
-                getCurrentUser={getCurrentUser}
-                setCurrentUser={setCurrentUser}
-              />
-            }
+            element={<Login getCurrentUser={getCurrentUser} />}
           />
           <Route
             path="/courses"
             element={
               <Courses
-                coursesList={courses}
-                authorsList={authors}
-                onRefreshCourses={fetchData}
+              // coursesList={courses}
+              // authorsList={authors}
+              // onRefreshCourses={fetchData}
               />
             }
           />
           <Route
             path="/courses/:courseId"
-            element={<CourseInfo coursesList={courses} authorsList={authors} />}
+            // element={<CourseInfo coursesList={courses} authorsList={authors} />}
+            element={<CourseInfo />}
             exact="true"
           />
           <Route
             path="/courses/add"
             element={
               <CourseForm
-                authorsList={authors}
-                createCourse={createCourse}
-                createAuthor={createAuthor}
+              // authorsList={authors}
+              // createCourse={createCourse}
+              // createAuthor={createAuthor}
               />
             }
             exact="true"

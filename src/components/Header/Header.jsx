@@ -29,22 +29,27 @@
 
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Logo } from "./components";
 import { Button } from "../../common";
 import { logout } from "../../services";
+import { removeUserData } from "../../store/slices/userSlice";
+import { getUserNameSelector } from "../../store/selectors";
 
 import styles from "./styles.module.css";
 
-export const Header = ({ currentUser }) => {
+export const Header = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
+  const userName = useSelector(getUserNameSelector);
 
   const handleLoginLogout = () => {
-    if (currentUser) {
+    if (userName) {
       try {
         logout();
-        localStorage.removeItem("token");
+        dispatch(removeUserData());
         navigate("/login");
       } catch (error) {
         console.error("Error logout current user:", error);
@@ -63,9 +68,9 @@ export const Header = ({ currentUser }) => {
       <Logo />
       {!isAuthPage && (
         <div className={styles.userContainer}>
-          <p className={styles.userName}>{currentUser?.name || "Stranger"}</p>
+          <p className={styles.userName}>{userName || "Stranger"}</p>
           <Button
-            buttonText={currentUser?.name ? "Logout" : "Login"}
+            buttonText={userName ? "Logout" : "Login"}
             handleClick={handleLoginLogout}
             data-testid="header.login-logout.button"
           />

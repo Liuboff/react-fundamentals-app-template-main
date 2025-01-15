@@ -23,20 +23,21 @@
 // * use selectors from store/selectors.js to get coursesList, authorsList from store
 
 import React from "react";
+import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
+
+import { getAuthorsSelector, getCoursesSelector } from "../../store/selectors";
 
 import { formatCreationDate, getCourseDuration } from "../../helpers";
 
 import styles from "./styles.module.css";
 import { Button } from "../../common";
 
-// props description
-// * 'coursesList' - list of all courses. You need it to get chosen course from the list
-// * 'authorsList' - list of all authors. You need it to get authors' names for chosen course
-// * 'showCourseId' - id of chosen course. Use it to find needed course on the 'coursesList'.
-
-export const CourseInfo = ({ coursesList, authorsList }) => {
+export const CourseInfo = () => {
   // write your code here
+  const coursesList = useSelector(getCoursesSelector);
+  const authorsList = useSelector(getAuthorsSelector);
+
   const { courseId } = useParams();
   const course = coursesList.find((course) => course.id === courseId);
 

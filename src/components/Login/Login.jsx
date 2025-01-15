@@ -19,20 +19,23 @@
 // * use 'setUserData' from 'userSlice.js' to add user's data to store. (DO NOT use 'user/me' [GET] request)
 
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
 import { Button, Input } from "../../common";
 import { login } from "../../services";
 
 import styles from "./styles.module.css";
+import { setUserData } from "../../store/slices/userSlice";
 
-export const Login = ({ setCurrentUser, getCurrentUser }) => {
+export const Login = ({ getCurrentUser }) => {
   // write your code here
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [errors, setErrors] = useState({});
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const validateForm = () => {
     const newErrors = {};
@@ -52,13 +55,12 @@ export const Login = ({ setCurrentUser, getCurrentUser }) => {
         password: password.trim(),
       });
       if (response.successful && response.result) {
-        localStorage.setItem("token", response.result.split(" ")[1]);
+        const token = response.result.split(" ")[1];
         setEmail("");
         setPassword("");
         try {
           let userData = await getCurrentUser();
-          setCurrentUser(userData.result);
-          console.log(userData.result);
+          dispatch(setUserData({ token, ...userData.result }));
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -78,10 +80,7 @@ export const Login = ({ setCurrentUser, getCurrentUser }) => {
       <h1>Login</h1>
       <div className={styles.formContainer}>
         <form onSubmit={handleSubmit}>
-          {/* 
-          // reuse Input component for email field 
-          // // reuse Input component for password field 
-          // reuse Button component for 'Login' button */}
+          {/* reuse Input component for email field, reuse Input component for password field, reuse Button component for 'Login' button */}
           <label>
             Email:
             <Input

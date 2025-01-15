@@ -34,13 +34,27 @@ export const login = async (data) => {
 
 export const getCourses = async () => {
   const coursesUrl = `${url}courses/all`;
-  const response = await fetch(coursesUrl);
-  return await response.json();
+  const response = await fetch(coursesUrl, {
+    headers: { "Content-Type": "application/json" },
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    console.error(
+      `Error fetching courses: ${response.status} - ${response.statusText}`
+    );
+    return [];
+  }
+
+  return await response.json(); // є сенс лише всередині трай блоку
 };
 
 export const getAuthors = async () => {
   const authorsUrl = `${url}authors/all`;
-  const response = await fetch(authorsUrl);
+  const response = await fetch(authorsUrl, {
+    headers: { "Content-Type": "application/json" },
+    method: "GET",
+  });
   return await response.json();
 };
 
